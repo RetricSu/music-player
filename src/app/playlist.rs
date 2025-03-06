@@ -10,6 +10,12 @@ pub struct Playlist {
     pub selected: Option<LibraryItem>,
 }
 
+impl Default for Playlist {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Playlist {
     pub fn new() -> Self {
         Self {
@@ -61,6 +67,8 @@ impl Playlist {
 
 #[cfg(test)]
 mod tests {
+    use crate::app::library::LibraryPathId;
+
     use super::*;
     use std::path::PathBuf;
 
@@ -85,7 +93,7 @@ mod tests {
 
     #[test]
     fn add_track_to_playlist() {
-        let track = LibraryItem::new(PathBuf::from(r"C:\music\song.mp3"));
+        let track = LibraryItem::new(PathBuf::from(r"C:\music\song.mp3"), LibraryPathId::new(0));
 
         let mut playlist = Playlist::new();
         playlist.add(track);
@@ -102,9 +110,9 @@ mod tests {
         let mut playlist = Playlist {
             name: Some("test".to_string()),
             tracks: vec![
-                LibraryItem::new(path1.clone()),
-                LibraryItem::new(path2.clone()),
-                LibraryItem::new(path3.clone()),
+                LibraryItem::new(path1.clone(), LibraryPathId::new(0)),
+                LibraryItem::new(path2.clone(), LibraryPathId::new(1)),
+                LibraryItem::new(path3.clone(), LibraryPathId::new(2)),
             ],
             selected: None,
         };
@@ -127,9 +135,9 @@ mod tests {
         let mut playlist = Playlist {
             name: Some("test".to_string()),
             tracks: vec![
-                LibraryItem::new(path1.clone()),
-                LibraryItem::new(path2.clone()),
-                LibraryItem::new(path3.clone()),
+                LibraryItem::new(path1.clone(), LibraryPathId::new(0)),
+                LibraryItem::new(path2.clone(), LibraryPathId::new(1)),
+                LibraryItem::new(path3.clone(), LibraryPathId::new(2)),
             ],
             selected: None,
         };

@@ -35,19 +35,19 @@ impl AppComponent for PlaylistTable {
                         }
 
                         if let Some(track_number) = &track.track_number() {
-                            ui.label(&track_number.to_string());
+                            ui.label(track_number.to_string());
                         } else {
                             ui.label("");
                         }
 
                         let artist_label = ui.add(
-                            egui::Label::new(&track.artist().unwrap_or("?".to_string()))
+                            egui::Label::new(track.artist().unwrap_or("?".to_string()))
                                 .sense(egui::Sense::click()),
                         );
 
-                        ui.label(&track.album().unwrap_or("?".to_string()));
-                        ui.label(&track.title().unwrap_or("?".to_string()));
-                        ui.label(&track.genre().unwrap_or("?".to_string()));
+                        ui.label(track.album().unwrap_or("?".to_string()));
+                        ui.label(track.title().unwrap_or("?".to_string()));
+                        ui.label(track.genre().unwrap_or("?".to_string()));
 
                         // Temporary hack because I don't yet know how to treat an entire Row
                         // as a response

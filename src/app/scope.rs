@@ -3,12 +3,18 @@ pub struct Scope {
     pub buffer: Vec<f32>,
 }
 
+impl Default for Scope {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Scope {
     // TODO - take in ms and figure out buffer size
     pub fn new() -> Self {
         Self {
             write_idx: 0,
-            buffer: vec![0.0f32; 48000 * 1],
+            buffer: vec![0.0f32; 48000],
         }
     }
 
@@ -25,8 +31,8 @@ impl Scope {
         // if slice can fit from write pointer to end, then write all at once.
         // Otherwise, write from write idx to end of buf.
         // then update write idx to beginning and write the remaining of slice.
-        if samples.len() > 0 && samples.len() <= self.buffer.len() - self.write_idx {
-            self.buffer[self.write_idx..(samples.len() + self.write_idx)].copy_from_slice(&samples);
+        if !samples.is_empty() && samples.len() <= self.buffer.len() - self.write_idx {
+            self.buffer[self.write_idx..(samples.len() + self.write_idx)].copy_from_slice(samples);
             self.write_idx += samples.len();
         } else {
             let remaining = self.buffer.len() - self.write_idx;
@@ -45,7 +51,7 @@ impl<'a> IntoIterator for &'a Scope {
     fn into_iter(self) -> Self::IntoIter {
         let mut index = self.write_idx + 1;
 
-        if &index >= &self.buffer.len() {
+        if index >= self.buffer.len() {
             index -= &self.buffer.len();
         }
 
@@ -62,7 +68,7 @@ pub struct ScopeIterator<'a> {
     counter: usize,
 }
 
-impl<'a> Iterator for ScopeIterator<'a> {
+impl Iterator for ScopeIterator<'_> {
     type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {

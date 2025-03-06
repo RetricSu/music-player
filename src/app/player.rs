@@ -45,10 +45,7 @@ impl Player {
     }
 
     pub fn is_stopped(&self) -> bool {
-        match self.track_state {
-            TrackState::Stopped => true,
-            _ => false,
-        }
+        matches!(self.track_state, TrackState::Stopped)
     }
 
     pub fn seek_to(&mut self, seek_to_timestamp: u64) {
@@ -113,7 +110,7 @@ impl Player {
 
     pub fn previous(&mut self, playlist: &Playlist) {
         if let Some(selected_track) = &self.selected_track {
-            if let Some(current_track_position) = playlist.get_pos(&selected_track) {
+            if let Some(current_track_position) = playlist.get_pos(selected_track) {
                 if current_track_position > 0 {
                     let previous_track = &playlist.tracks[current_track_position - 1];
                     self.select_track(Some((*previous_track).clone()));
@@ -125,7 +122,7 @@ impl Player {
 
     pub fn next(&mut self, playlist: &Playlist) {
         if let Some(selected_track) = &self.selected_track {
-            if let Some(current_track_position) = playlist.get_pos(&selected_track) {
+            if let Some(current_track_position) = playlist.get_pos(selected_track) {
                 if current_track_position < playlist.tracks.len() - 1 {
                     let next_track = &playlist.tracks[current_track_position + 1];
                     self.select_track(Some((*next_track).clone()));

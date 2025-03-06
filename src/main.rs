@@ -17,7 +17,6 @@ use symphonia::core::formats::{FormatOptions, FormatReader, SeekMode, SeekTo, Tr
 use symphonia::core::io::MediaSourceStream;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::probe::Hint;
-use symphonia::core::units::Time;
 
 mod app;
 mod output;
@@ -297,7 +296,6 @@ fn process_audio_cmd(
 }
 
 enum SeekPosition {
-    Time(f64),
     Timestamp(u64),
 }
 
@@ -346,10 +344,7 @@ fn load_file(
     match symphonia::default::get_probe().format(&hint, mss, &format_opts, &metadata_opts) {
         Ok(probed) => {
             // Set the decoder options.
-            let decode_opts = DecoderOptions {
-                verify: true,
-                ..Default::default()
-            };
+            let decode_opts = DecoderOptions { verify: true };
 
             audio_engine_state.reader = Some(probed.format);
             audio_engine_state.decode_opts = Some(decode_opts);
@@ -370,7 +365,7 @@ fn load_file(
                 Some(track) => track,
                 _ => {
                     tracing::warn!("Couldn't find track");
-                    return ();
+                    return;
                 }
             };
 
@@ -430,10 +425,6 @@ fn setup_audio_reader(audio_engine_state: &mut AudioEngineState) -> Result<i32> 
     // current approach will discard excess samples if seeking to a sample within a packet.
     let seek_ts = if let Some(seek) = seek {
         let seek_to = match seek {
-            SeekPosition::Time(t) => SeekTo::Time {
-                time: Time::from(*t),
-                track_id: Some(track_id),
-            },
             SeekPosition::Timestamp(ts) => SeekTo::TimeStamp { ts: *ts, track_id },
         };
 
