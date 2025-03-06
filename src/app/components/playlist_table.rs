@@ -16,42 +16,46 @@ impl AppComponent for PlaylistTable {
                     // Header
                     ui.label("Playing");
                     ui.label("#");
+                    ui.label("Title");
                     ui.label("Artist");
                     ui.label("Album");
-                    ui.label("Title");
                     ui.label("Genre");
                     ui.end_row();
 
                     // Rows
-                    for track in ctx.playlists[*current_playlist_idx].tracks.iter() {
+                    for (iter_idx, track) in ctx.playlists[*current_playlist_idx]
+                        .tracks
+                        .iter()
+                        .enumerate()
+                    {
                         if let Some(selected_track) = &ctx.player.as_ref().unwrap().selected_track {
                             if selected_track == track {
                                 ui.label("▶".to_string());
                             } else {
-                                ui.label(" ".to_string());
+                                ui.label("-".to_string());
                             }
                         } else {
-                            ui.label(" ".to_string());
+                            ui.label("-".to_string());
                         }
 
                         if let Some(track_number) = &track.track_number() {
                             ui.label(track_number.to_string());
                         } else {
-                            ui.label("");
+                            ui.label((iter_idx + 1).to_string());
                         }
 
-                        let artist_label = ui.add(
-                            egui::Label::new(track.artist().unwrap_or("?".to_string()))
+                        let title_label = ui.add(
+                            egui::Label::new(track.title().unwrap_or("unknown title".to_string()))
                                 .sense(egui::Sense::click()),
                         );
 
-                        ui.label(track.album().unwrap_or("?".to_string()));
-                        ui.label(track.title().unwrap_or("?".to_string()));
-                        ui.label(track.genre().unwrap_or("?".to_string()));
+                        ui.label(track.artist().unwrap_or("unknown artist".to_string()));
+                        ui.label(track.album().unwrap_or("unknown album".to_string()));
+                        ui.label(track.genre().unwrap_or("unknown genre".to_string()));
 
                         // Temporary hack because I don't yet know how to treat an entire Row
                         // as a response
-                        if artist_label.double_clicked() {
+                        if title_label.double_clicked() {
                             //ctx.player.as_mut().unwrap().selected_track = Some(track.clone());
                             ctx.player
                                 .as_mut()
@@ -60,7 +64,7 @@ impl AppComponent for PlaylistTable {
                             ctx.player.as_mut().unwrap().play();
                         }
 
-                        if artist_label.clicked() {
+                        if title_label.clicked() {
                             ctx.player.as_mut().unwrap().selected_track = Some(track.clone());
                         }
 

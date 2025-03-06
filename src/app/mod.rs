@@ -120,13 +120,15 @@ impl std::fmt::Display for TempError {
 
 impl App {
     pub fn load() -> Result<Self, TempError> {
+        let file = confy::get_configuration_file_path("music_player", None).unwrap();
+        println!("Load configuration file {:#?}", file);
         confy::load("music_player", None).map_err(|_| TempError::MissingAppState)
     }
 
     pub fn save_state(&self) {
         let store_result = confy::store("music_player", None, self);
         match store_result {
-            Ok(_) => tracing::info!("Store was successfull"),
+            Ok(_) => tracing::info!("Store was successful"),
             Err(err) => tracing::error!("Failed to store the app state: {}", err),
         }
     }
@@ -167,7 +169,7 @@ impl App {
 
                     let library_item = match tag {
                         Ok(tag) => LibraryItem::new(entry.path().to_path_buf(), path_id)
-                            .set_title(tag.title())
+                            .set_title(tag.title().or(Some("Unknown Title")))
                             .set_artist(tag.artist())
                             .set_album(tag.album())
                             .set_year(tag.year())
@@ -202,9 +204,11 @@ impl App {
             let mut library_items_clone = items.clone();
             library_items_clone.sort_by_key(|item| item.album());
 
-            let grouped_library_by_album = &library_items_clone
-                .into_iter()
-                .group_by(|item| item.album().unwrap_or("<?>".to_string()).to_string());
+            let grouped_library_by_album = &library_items_clone.into_iter().group_by(|item| {
+                item.album()
+                    .unwrap_or("unknown album".to_string())
+                    .to_string()
+            });
 
             for (album_name, album_library_items) in grouped_library_by_album {
                 let lib_item_container = LibraryItemContainer {

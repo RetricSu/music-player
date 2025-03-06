@@ -244,10 +244,30 @@ fn main() {
         ..Default::default()
     };
 
+    // load fonts
+    const FONT_DATA: &[u8] = include_bytes!("assets/fonts/NotoSansSC/NotoSansSC-Regular.ttf");
+
     eframe::run_native(
         "Music Player",
         native_options,
-        Box::new(|_| Ok(Box::new(app))),
+        Box::new(|cc| {
+            let mut fonts = egui::FontDefinitions::default();
+
+            fonts.font_data.insert(
+                "NotoSansSC".to_owned(),
+                egui::FontData::from_static(FONT_DATA),
+            );
+
+            fonts
+                .families
+                .get_mut(&egui::FontFamily::Proportional)
+                .unwrap()
+                .insert(0, "NotoSansSC".to_owned());
+
+            cc.egui_ctx.set_fonts(fonts);
+
+            Ok(Box::new(app))
+        }),
     )
     .expect("eframe failed: I should change main to return a result and use anyhow");
 }

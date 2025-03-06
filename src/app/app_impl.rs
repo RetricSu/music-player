@@ -35,8 +35,12 @@ impl eframe::App for App {
         if let Some(selected_track) = &self.player.as_mut().unwrap().selected_track {
             let display = format!(
                 "{} - {} [ Music Player ]",
-                &selected_track.artist().unwrap_or("?".to_string()),
-                &selected_track.title().unwrap_or("?".to_string())
+                &selected_track
+                    .artist()
+                    .unwrap_or("unknown artist".to_string()),
+                &selected_track
+                    .title()
+                    .unwrap_or("unknown title".to_string())
             );
 
             ctx.send_viewport_cmd(egui::ViewportCommand::Title(display));

@@ -13,16 +13,22 @@ impl AppComponent for LibraryComponent {
                 .show(ui, |ui| {
                     for container in &ctx.library.view().containers {
                         let items = &container.items;
+                        // todo: correct the name to remove this patch
+                        let album_name = if container.name.is_empty() || container.name == "<?>" {
+                            "unknown album".to_string()
+                        } else {
+                            container.name.clone()
+                        };
 
                         let library_group = eframe::egui::CollapsingHeader::new(
-                            eframe::egui::RichText::new(&container.name),
+                            eframe::egui::RichText::new(album_name),
                         )
                         .default_open(false)
-                        .show(ui, |ui| {
+                        .show(ui, |ui: &mut eframe::egui::Ui| {
                             for item in &container.items {
                                 let item_label = ui.add(
                                     eframe::egui::Label::new(eframe::egui::RichText::new(
-                                        item.title().unwrap_or("?".to_string()),
+                                        item.title().unwrap_or("unknown title".to_string()),
                                     ))
                                     .sense(eframe::egui::Sense::click()),
                                 );
@@ -32,7 +38,9 @@ impl AppComponent for LibraryComponent {
                                         let current_playlist =
                                             &mut ctx.playlists[*current_playlist_idx];
 
-                                        current_playlist.add(item.clone());
+                                        if !current_playlist.tracks.contains(item) {
+                                            current_playlist.add(item.clone());
+                                        }
                                     }
                                 }
                             }
@@ -43,7 +51,9 @@ impl AppComponent for LibraryComponent {
 
                             if library_group.header_response.double_clicked() {
                                 for item in items {
-                                    current_playlist.add(item.clone());
+                                    if !current_playlist.tracks.contains(item) {
+                                        current_playlist.add(item.clone());
+                                    }
                                 }
                             }
                         }
