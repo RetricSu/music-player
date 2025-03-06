@@ -16,9 +16,9 @@ impl AppComponent for PlaylistTable {
                     // Header
                     ui.label("Playing");
                     ui.label("#");
+                    ui.label("Title");
                     ui.label("Artist");
                     ui.label("Album");
-                    ui.label("Title");
                     ui.label("Genre");
                     ui.end_row();
 
@@ -40,14 +40,17 @@ impl AppComponent for PlaylistTable {
                             ui.label("");
                         }
 
+                        ui.label(track.title().unwrap_or("unknown title".to_string()));
+
                         let artist_label = ui.add(
-                            egui::Label::new(track.artist().unwrap_or("?".to_string()))
-                                .sense(egui::Sense::click()),
+                            egui::Label::new(
+                                track.artist().unwrap_or("unknown artist".to_string()),
+                            )
+                            .sense(egui::Sense::click()),
                         );
 
-                        ui.label(track.album().unwrap_or("?".to_string()));
-                        ui.label(track.title().unwrap_or("?".to_string()));
-                        ui.label(track.genre().unwrap_or("?".to_string()));
+                        ui.label(track.album().unwrap_or("unknown album".to_string()));
+                        ui.label(track.genre().unwrap_or("unknown genre".to_string()));
 
                         // Temporary hack because I don't yet know how to treat an entire Row
                         // as a response
