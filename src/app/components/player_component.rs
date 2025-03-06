@@ -19,7 +19,7 @@ impl AppComponent for PlayerComponent {
             let previous_vol = volume;
 
             let volume_slider = ui.add(
-                eframe::egui::Slider::new(&mut volume, (0.0 as f32)..=(1.0 as f32))
+                eframe::egui::Slider::new(&mut volume, 0.0_f32..=1.0_f32)
                     .logarithmic(false)
                     .show_value(true)
                     .clamp_to_range(true)

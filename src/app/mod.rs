@@ -15,7 +15,7 @@ use itertools::Itertools;
 use id3::{Tag, TagLike};
 use rayon::prelude::*;
 
-mod app;
+mod app_impl;
 mod components;
 mod library;
 pub mod player;
@@ -124,7 +124,7 @@ impl App {
     }
 
     pub fn save_state(&self) {
-        let store_result = confy::store("music_player", None, &self);
+        let store_result = confy::store("music_player", None, self);
         match store_result {
             Ok(_) => tracing::info!("Store was successfull"),
             Err(err) => tracing::error!("Failed to store the app state: {}", err),
@@ -147,7 +147,7 @@ impl App {
 
         let lib_cmd_tx = self.library_cmd_tx.as_ref().unwrap().clone();
         let path = lib_path.path().clone();
-        let path_id = lib_path.id().clone();
+        let path_id = lib_path.id();
 
         std::thread::spawn(move || {
             let files = walkdir::WalkDir::new(path)
@@ -163,7 +163,7 @@ impl App {
             let items = files
                 .par_iter()
                 .map(|entry| {
-                    let tag = Tag::read_from_path(&entry.path());
+                    let tag = Tag::read_from_path(entry.path());
 
                     let library_item = match tag {
                         Ok(tag) => LibraryItem::new(entry.path().to_path_buf(), path_id)
@@ -179,7 +179,7 @@ impl App {
                         }
                     };
 
-                    return library_item;
+                    library_item
                 })
                 .collect::<Vec<LibraryItem>>();
 
@@ -209,9 +209,7 @@ impl App {
             for (album_name, album_library_items) in grouped_library_by_album {
                 let lib_item_container = LibraryItemContainer {
                     name: album_name.clone(),
-                    items: album_library_items
-                        .map(|item| item.clone())
-                        .collect::<Vec<LibraryItem>>(),
+                    items: album_library_items.collect::<Vec<LibraryItem>>(),
                 };
 
                 library_view.containers.push(lib_item_container.clone());

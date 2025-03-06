@@ -8,6 +8,12 @@ pub struct Library {
     library_view: LibraryView,
 }
 
+impl Default for Library {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Library {
     pub fn new() -> Self {
         Self {
@@ -228,7 +234,7 @@ impl LibraryItem {
     }
 
     pub fn year(&self) -> Option<i32> {
-        self.year.clone()
+        self.year
     }
 
     pub fn set_genre(&mut self, genre: Option<&str>) -> Self {
@@ -248,7 +254,7 @@ impl LibraryItem {
     }
 
     pub fn track_number(&self) -> Option<u32> {
-        self.track_number.clone()
+        self.track_number
     }
 }
 

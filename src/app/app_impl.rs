@@ -21,15 +21,14 @@ impl eframe::App for App {
         ctx.request_repaint();
 
         if let Some(lib_cmd_rx) = &self.library_cmd_rx {
-            match lib_cmd_rx.try_recv() {
-                Ok(lib_cmd) => match lib_cmd {
+            if let Ok(lib_cmd) = lib_cmd_rx.try_recv() {
+                match lib_cmd {
                     LibraryCommand::AddItem(lib_item) => self.library.add_item(lib_item),
                     LibraryCommand::AddView(lib_view) => self.library.add_view(lib_view),
                     LibraryCommand::AddPathId(path_id) => {
                         self.library.set_path_to_imported(path_id)
                     }
-                },
-                Err(_) => (),
+                }
             }
         }
 
