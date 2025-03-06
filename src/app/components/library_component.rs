@@ -38,7 +38,9 @@ impl AppComponent for LibraryComponent {
                                         let current_playlist =
                                             &mut ctx.playlists[*current_playlist_idx];
 
-                                        current_playlist.add(item.clone());
+                                        if !current_playlist.tracks.contains(item) {
+                                            current_playlist.add(item.clone());
+                                        }
                                     }
                                 }
                             }
@@ -49,7 +51,9 @@ impl AppComponent for LibraryComponent {
 
                             if library_group.header_response.double_clicked() {
                                 for item in items {
-                                    current_playlist.add(item.clone());
+                                    if !current_playlist.tracks.contains(item) {
+                                        current_playlist.add(item.clone());
+                                    }
                                 }
                             }
                         }
